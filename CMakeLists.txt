@@ -3,4 +3,6 @@ project(OSProject C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(OSProject main.c)
+add_executable(OSProject milestone1.c
+        dijkstra.c
+        dijkstra.h)
