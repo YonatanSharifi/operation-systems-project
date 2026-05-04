@@ -1,26 +1,24 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "dijkstra.h"
 
-int main(void) {
-    int **matrix = read_file("exemple.txt");
-
-    int num_nodes = matrix[0][0];
-    int src       = matrix[0][1];
-    int dest      = matrix[0][2];
-
-    printf("Nodes: %d\n", num_nodes);
-    printf("Source: %d  Destination: %d\n", src, dest);
-    printf("\nAdjacency matrix:\n");
-    printf("   ");
-    for (int i = 0; i < num_nodes; i++)
-        printf("%3d", i);
-    printf("\n");
-    for (int i = 0; i < num_nodes; i++) {
-        printf("%3d", i);
-        for (int j = 0; j < num_nodes; j++)
-            printf("%3d", matrix[i + 1][j]);
-        printf("\n");
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Missing file\n");
+        return 1;
     }
+
+    int **matrix = read_file(argv[1]);
+    if (!matrix) {
+        perror("Open file failed");
+        return 1;
+    }
+
+    dijkstra(matrix);
+    int n = matrix[0][0];
+    for (int i = 0; i <= n; i++)
+        free(matrix[i]);
+    free(matrix);
 
     return 0;
 }
