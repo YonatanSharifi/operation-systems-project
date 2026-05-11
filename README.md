@@ -1,41 +1,33 @@
-# OSProject
+# OS Project - Graph Simulation
 
+## Team Members
+* Eden Gohari
+* Yonatan Ishay
+* Israel Iday
+* Yonatan Sharify
 
-## Group Members
+## Overview
+A simulation of an entity moving on a directed graph, written in C.
+The shortest path is calculated using Dijkstra's algorithm, and the visualization is built with the Raylib library.
 
-1. Eden gohari
-2. Yonatan ishay
-3. israel iday
-4. Yonatan Sharify
+## Project Stages
+* **Milestone 1:** Dijkstra's algorithm implementation (console output).
+* **Milestone 2:** Static graph rendering (nodes arranged in a circle, directed edges with weights).
+* **Milestone 3:** Entity movement animation along the calculated path (300ms delay per edge weight unit, 1-second delay at intermediate nodes).
 
-## File Format
+## Build
+Use the provided Makefile to compile:
+* `make milestone1`
+* `make milestone2`
+* `make milestone3`
+* `make clean`
 
-```
-<nodes> <edges>
-<from> <to> <weight>
-...
-<source> <destination>
-```
+## Run
+Milestone 1:
+`./dijkstra <input_file>`
 
-Example (`exemple.txt`):
-```
-6 8
-0 1 4
-0 2 2
-1 3 5
-2 1 1
-2 3 8
-3 4 2
-4 5 3
-2 5 10
-0 5
-```
-
-- First line: number of nodes and edges
-- Middle lines: each directed edge with its weight
-- Last line: source and destination nodes for the shortest path
-
-## Build & Run
+Milestones 2 & 3:
+`./sim <input_file>`
 
 ### Milestone 1 — read file, run dijkstra, print shortest path and total weight 
 
