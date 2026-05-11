@@ -13,7 +13,7 @@ The shortest path is calculated using Dijkstra's algorithm, and the visualizatio
 ## Project Stages
 * **Milestone 1:** Dijkstra's algorithm implementation (console output).
 * **Milestone 2:** Static graph rendering (nodes arranged in a circle, directed edges with weights).
-* **Milestone 3:** Entity movement animation along the calculated path (300ms delay per edge weight unit, 1-second delay at intermediate nodes).
+* **Milestone 3:** Entity movement animation along the calculated path.
 
 ## Build
 Use the provided Makefile to compile:
