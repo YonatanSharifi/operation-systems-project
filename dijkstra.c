@@ -114,3 +114,45 @@ void dijkstra(int **matrix) {
     free(visited);
     free(path);
 }
+
+int* compute_path(int **matrix, int start, int end, int *out_len) {
+    int n = matrix[0][0];
+    int *distance = malloc(n * sizeof(int));
+    int *prev = malloc(n * sizeof(int));
+    int *visited = malloc(n * sizeof(int));
+
+    for (int i = 0; i < n; i++) { distance[i] = INT_MAX; prev[i] = -1; visited[i] = 0; }
+    distance[start] = 0;
+
+    for (int count = 0; count < n; count++) {
+        int u = -1;
+        for (int i = 0; i < n; i++)
+            if (!visited[i] && (u == -1 || distance[i] < distance[u])) u = i;
+        if (u == -1 || distance[u] == INT_MAX) break;
+        visited[u] = 1;
+        for (int v = 0; v < n; v++) {
+            int w = matrix[u + 1][v];
+            if (w > 0 && !visited[v] && distance[u] + w < distance[v]) {
+                distance[v] = distance[u] + w;
+                prev[v] = u;
+            }
+        }
+    }
+
+    if (distance[end] == INT_MAX) {
+        *out_len = 0;
+        free(distance); free(prev); free(visited);
+        return NULL;
+    }
+
+    int *temp_path = malloc(n * sizeof(int));
+    int len = 0;
+    for (int curr = end; curr != -1; curr = prev[curr]) temp_path[len++] = curr;
+
+    int *final_path = malloc(len * sizeof(int));
+    for (int i = 0; i < len; i++) final_path[i] = temp_path[len - 1 - i];
+
+    *out_len = len;
+    free(temp_path); free(distance); free(prev); free(visited);
+    return final_path;
+}
