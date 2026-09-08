@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
             DrawCircleV(positions[i], NODE_RADIUS, SKYBLUE);
             DrawCircleLines((int)positions[i].x, (int)positions[i].y, NODE_RADIUS, DARKBLUE);
 
-            char idStr[4];
+            char idStr[11];
             sprintf(idStr, "%d", i);
             int textWidth = MeasureText(idStr, 20);
             DrawText(idStr, (int)positions[i].x - textWidth / 2, (int)positions[i].y - 10, 20, BLACK);
