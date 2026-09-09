@@ -35,11 +35,22 @@ static void run_child(void) { //print each son started
     fflush(stdout);
     while (1) pause();
 }
-
+//exam_a location
 static void end_traveler_child(Traveler *t) { //end child run
     if (t->child_ended) return;
     kill(t->pid, CHILD_END_SIGNAL);
-    waitpid(t->pid, NULL, 0);
+    int status;
+    waitpid(t->pid, &status, 0);
+    if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+        printf("[%d] Exited successfully (exit code 0)\n", t->pid);
+    } else if (WIFEXITED(status)) {
+        printf("[%d] Exited with error (exit code %d)\n", t->pid, WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status) && WTERMSIG(status) == CHILD_END_SIGNAL) {
+      printf("[%d] Terminated as expected by parent (signal %d)\n", t->pid, WTERMSIG(status));
+    } else {
+        printf("[%d] Terminated unexpectedly by signal %d \n", t->pid, WTERMSIG(status));
+    }
+    fflush(stdout);
     t->child_ended = 1;
 }
 
