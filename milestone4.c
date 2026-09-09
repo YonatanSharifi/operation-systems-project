@@ -30,7 +30,14 @@ typedef struct { //each traveler data
     int child_ended;
 } Traveler;
 
-static void run_child(void) { //print each son started
+static void child_sig_handler(int sig) {
+    printf("[%d] exiting\n", getpid());
+    fflush(stdout);
+    exit(0);
+}
+
+static void run_child(void) { 
+    signal(CHILD_END_SIGNAL, child_sig_handler);
     printf("[%d] started\n", getpid());
     fflush(stdout);
     while (1) pause();
