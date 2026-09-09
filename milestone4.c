@@ -18,7 +18,7 @@
 #define STATE_MOVING 0
 #define STATE_FINISHED 1
 
-typedef struct { //each traveler data
+typedef struct { 
     int *path;
     int path_len;
     int state;
@@ -30,25 +30,37 @@ typedef struct { //each traveler data
     int child_ended;
 } Traveler;
 
-static void run_child(void) { //print each son started
+static void run_child(void) { 
     printf("[%d] started\n", getpid());
     fflush(stdout);
     while (1) pause();
 }
 
-static void end_traveler_child(Traveler *t) { //end child run
+static void end_traveler_child(Traveler *t) { 
     if (t->child_ended) return;
     kill(t->pid, CHILD_END_SIGNAL);
-    waitpid(t->pid, NULL, 0);
+    
+    int status;
+    waitpid(t->pid, &status, 0);
+    
+    if (WIFEXITED(status)) {
+        if (WEXITSTATUS(status) == 0) {
+            printf("Child %d exited normally (exit code 0)\n", t->pid);
+        } else {
+            printf("Child %d exited but not with exit code 0\n", t->pid);
+        }
+    } else {
+        printf("Child %d did not exit normally\n", t->pid);
+    }
+    
     t->child_ended = 1;
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) { //check if we got file
+    if (argc < 2) { 
         printf("Missing file\n");
         return 1;
     }
-    // initialize data
     TravelerSpec *specs = NULL;
     int num_travelers = 0;
     int **matrix = read_multi_traveler_file(argv[1], &specs, &num_travelers);
@@ -58,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
     int num_nodes = matrix[0][0];
 
-    if (num_travelers <= 0) { //check if there is travelers
+    if (num_travelers <= 0) { 
         printf("No travelers found in input file\n");
         for (int i = 0; i <= num_nodes; i++) free(matrix[i]);
         free(matrix);
@@ -66,8 +78,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Traveler *travelers = malloc(num_travelers * sizeof(Traveler)); //initialize travelers
-    for (int i = 0; i < num_travelers; i++) { //check each traveler path and his data
+    Traveler *travelers = malloc(num_travelers * sizeof(Traveler)); 
+    for (int i = 0; i < num_travelers; i++) { 
         travelers[i].path = compute_path(matrix, specs[i].source, specs[i].dest, &travelers[i].path_len);
         travelers[i].state = STATE_MOVING;
         travelers[i].current_edge = 0;
@@ -76,7 +88,7 @@ int main(int argc, char *argv[]) {
         travelers[i].color = ColorFromHSV((float)(i * (360.0 / num_travelers)), 0.85f, 0.95f);
     }
 
-    for (int i = 0; i < num_travelers; i++) { //create son for each traveler
+    for (int i = 0; i < num_travelers; i++) { 
         pid_t pid = fork();
         if (pid < 0) {
             perror("fork failed");
@@ -88,17 +100,17 @@ int main(int argc, char *argv[]) {
         }
         travelers[i].pid = pid;
     }
-    //initialize graphics
+    
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "OS Project - Milestone 4");
     SetTargetFPS(60);
-    //nodes position
+    
     Vector2 *positions = malloc(num_nodes * sizeof(Vector2));
     Vector2 center;
     center.x = SCREEN_WIDTH / 2.0f;
     center.y = SCREEN_HEIGHT / 2.0f;
     float radius = 220.0f;
     compute_circle_positions(num_nodes, center, radius, positions);
-    //each traveler starting node, and check if each traveler start node = end node
+    
     for (int i = 0; i < num_travelers; i++) {
         Traveler *t = &travelers[i];
         if (t->path_len <= 1) {
@@ -113,7 +125,7 @@ int main(int argc, char *argv[]) {
             t->pos = positions[t->path[0]];
         }
     }
-    //botton
+    
     bool is_playing = false;
     Rectangle btnBounds;
     btnBounds.x = 10;
@@ -123,11 +135,9 @@ int main(int argc, char *argv[]) {
 
     while (!WindowShouldClose()) {
         Vector2 mousePoint = GetMousePosition();
-        //check if botton pressed
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CheckCollisionPointRec(mousePoint, btnBounds)) {
             is_playing = !is_playing;
         }
-        //if not playing make sure nothing moves
         float dt;
         if (is_playing) {
             dt = GetFrameTime();
